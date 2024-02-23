@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node build/src/index.js",
-    "build": "tsc -p tsconfig.json",
+    "start": "node build/src/server.js",
+    "build": "rm -rf ./js/ && tsc -p tsconfig.json",
     "test": "jest --coverage"
   },
   "author": "Guilherme Sborz",
