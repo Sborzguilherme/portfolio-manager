@@ -3,7 +3,7 @@ import router from "./router";
 import { connectMongoDB } from "./db";
 
 const app = express();
-const port = 3000;
+const port = process.env.NODE_DOCKER_PORT || 8080;
 const serverName = "porfolio-manager";
 
 async function main() {
