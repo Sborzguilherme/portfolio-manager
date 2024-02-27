@@ -1,4 +1,4 @@
-FROM node:20.11.1-bullseye-slim
+FROM node:20.11.1-alpine
 # create root application folder
 WORKDIR /app
 
