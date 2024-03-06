@@ -2,22 +2,26 @@ version: "3.7"
 
 services:
   portfolio-manager:
+    container_name: portfolio-manager
     depends_on:
       - mongodb
     build:
       context: .
       dockerfile: Dockerfile
-    env_file: ./.env
+      target: base
+    env_file: .env
     volumes:
       - ./src:/home/node/app/src
-    container_name: portfolio-manager
+      - ./nodemon.json:/home/node/app/nodemon.json
+    expose:
+      - $NODE_LOCAL_PORT
     ports:
       - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
     environment:
       - DB_HOST=mongodb
       - DB_NAME=$MONGODB_DATABASE
       - DB_PORT=$MONGODB_DOCKER_PORT
-    command: npm run start
+    command: npm run dev
   mongodb:
     image: mongo:5.0.2
     restart: unless-stopped

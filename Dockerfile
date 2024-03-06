@@ -1,12 +1,15 @@
-FROM node:20.11.1-alpine
-# create root application folder
-WORKDIR /app
+FROM node:20.11.1-alpine as base
 
-# copy configs to /app folder
-COPY package*.json ./
-COPY tsconfig.json ./
-# copy source code to /app/src folder
-COPY src /app/src
+WORKDIR /home/node/app
 
-RUN npm install
+COPY package.json ./
+
+RUN npm i
+
+COPY . .
+
+FROM base as production
+
+ENV NODE_PATH=./build
+
 RUN npm run build
