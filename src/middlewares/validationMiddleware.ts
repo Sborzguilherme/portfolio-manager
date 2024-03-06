@@ -1,6 +1,5 @@
 import { ZodSchema } from "zod";
 import { Request, Response, NextFunction } from "express";
-import { StatusCodes } from "http-status-codes";
 
 export function validate(schema: ZodSchema) {
   return function (req: Request, res: Response, next: NextFunction) {
@@ -14,9 +13,7 @@ export function validate(schema: ZodSchema) {
       return next();
     } catch (err) {
       console.log(`[${validate.name} error]`, err.errors);
-      return res
-        .status(StatusCodes.UNPROCESSABLE_ENTITY)
-        .send("Unprocessable entity");
+      return res.boom.badData("Validation error");
     }
   };
 }

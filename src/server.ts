@@ -1,4 +1,5 @@
 import express from "express";
+import boom from "express-boom";
 import router from "./router";
 import { connectMongoDB } from "./db";
 
@@ -11,6 +12,8 @@ async function main() {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(boom());
+
   app.use(router);
 
   app.get("/health", (_req, res) => {
