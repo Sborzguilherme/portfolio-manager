@@ -9,6 +9,8 @@ const serverName = "porfolio-manager";
 async function main() {
   await connectMongoDB();
 
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
   app.use(router);
 
   app.get("/health", (_req, res) => {

@@ -1,6 +1,4 @@
-export interface Expense {
-  catagory: string;
-  description: string;
-  date: Date;
-  amount: Number;
-}
+import { z } from "zod";
+import { createExpenseSchema } from "../schemas";
+
+export type CreateExpense = z.infer<typeof createExpenseSchema>;

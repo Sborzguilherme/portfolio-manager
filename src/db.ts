@@ -14,3 +14,7 @@ export async function connectMongoDB() {
 export function getDbClient() {
   return client.db(dbName);
 }
+
+export const collectionNames = {
+  EXPENSES: "expenses",
+};

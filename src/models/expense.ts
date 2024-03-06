@@ -1,13 +1,14 @@
 import { ObjectId } from "mongodb";
-import { getDbClient } from "../db";
-import { Expense } from "types";
+import { getDbClient, collectionNames } from "../db";
+import { CreateExpense } from "../types";
 
-const ExpenseColletction = getDbClient().collection("Expense");
+const ExpenseColletction = getDbClient().collection(collectionNames.EXPENSES);
 
 export async function findOne(id: string) {
   return ExpenseColletction.findOne(new ObjectId(id));
 }
 
-export async function insertOne(expense: Expense) {
-  return ExpenseColletction.insertOne(expense);
+export async function insertOne(expense: CreateExpense): Promise<string> {
+  const insertedDocument = await ExpenseColletction.insertOne(expense);
+  return insertedDocument.insertedId.toString();
 }
