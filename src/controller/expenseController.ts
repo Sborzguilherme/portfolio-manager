@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ExpensesModel } from "../models";
+import { GetExpenses } from "types";
 
 export async function getExpenseById(req: Request, res: Response) {
   try {
@@ -17,7 +18,7 @@ export async function getExpenseById(req: Request, res: Response) {
     return res.boom.badImplementation();
   }
 }
-export function getExpenses() {}
+
 export async function createExpense(req: Request, res: Response) {
   try {
     const payload = req.body;
@@ -29,6 +30,29 @@ export async function createExpense(req: Request, res: Response) {
     return res.boom.badImplementation();
   }
 }
+
+export async function getExpenses(
+  req: Request<{}, {}, {}, GetExpenses>,
+  res: Response
+) {
+  try {
+    const { category, startDate, endDate, pageSize, pageNumber } = req.query;
+
+    const expenses = await ExpensesModel.find(
+      category,
+      startDate,
+      endDate,
+      parseInt(pageSize),
+      parseInt(pageNumber)
+    );
+
+    return res.status(StatusCodes.OK).send(expenses);
+  } catch (error) {
+    console.log(`[${createExpense.name} error]`, error);
+    return res.boom.badImplementation();
+  }
+}
+
 export async function updateExpense(req: Request, res: Response) {
   try {
     const { _id } = req.params;

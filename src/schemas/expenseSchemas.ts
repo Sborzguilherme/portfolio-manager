@@ -40,3 +40,17 @@ export const deleteExpenseSchema = z.object({
     _id: z.string(),
   }),
 });
+
+export const getExpensesQuery = z
+  .object({
+    category: z.string().optional(),
+    startDate: z.coerce.date().optional(),
+    endDate: z.coerce.date().optional(),
+    pageSize: z.string(),
+    pageNumber: z.string(),
+  })
+  .strict();
+
+export const getExpensesSchema = z.object({
+  query: getExpensesQuery,
+});

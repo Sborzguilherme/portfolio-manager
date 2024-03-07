@@ -6,6 +6,7 @@ import {
   createExpenseSchema,
   deleteExpenseSchema,
   updateExpenseSchema,
+  getExpensesSchema,
 } from "../schemas";
 
 const router = Router();
@@ -15,7 +16,11 @@ router.get(
   validate(getExpenseByIdSchema),
   expenseController.getExpenseById
 );
-router.get("/expense", expenseController.getExpenses);
+router.get(
+  "/expense",
+  validate(getExpensesSchema),
+  expenseController.getExpenses
+);
 router.post(
   "/expense",
   validate(createExpenseSchema),
