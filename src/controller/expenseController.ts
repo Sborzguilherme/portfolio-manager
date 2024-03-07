@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ExpensesModel } from "../models";
 import { GetExpenses } from "types";
+import { fromDateToString, fromStringToDate } from "../utils";
 
 export async function getExpenseById(req: Request, res: Response) {
   try {
@@ -12,21 +13,12 @@ export async function getExpenseById(req: Request, res: Response) {
       return res.boom.notFound();
     }
 
-    return res.status(StatusCodes.OK).send(expense);
+    return res.status(StatusCodes.OK).send({
+      ...expense,
+      date: fromDateToString(expense.date),
+    });
   } catch (error) {
     console.log(`[${getExpenseById.name} error]`, error);
-    return res.boom.badImplementation();
-  }
-}
-
-export async function createExpense(req: Request, res: Response) {
-  try {
-    const payload = req.body;
-    const _id = await ExpensesModel.insertOne(payload);
-
-    return res.status(StatusCodes.CREATED).send({ _id });
-  } catch (error) {
-    console.log(`[${createExpense.name} error]`, error);
     return res.boom.badImplementation();
   }
 }
@@ -38,7 +30,7 @@ export async function getExpenses(
   try {
     const { category, startDate, endDate, pageSize, pageNumber } = req.query;
 
-    const expenses = await ExpensesModel.find(
+    const result = await ExpensesModel.find(
       category,
       startDate,
       endDate,
@@ -46,7 +38,29 @@ export async function getExpenses(
       parseInt(pageNumber)
     );
 
-    return res.status(StatusCodes.OK).send(expenses);
+    const formattedExpenses = result.expenses.map((r) => ({
+      ...r,
+      date: fromDateToString(r.date),
+    }));
+
+    return res
+      .status(StatusCodes.OK)
+      .send({ expenses: formattedExpenses, total: result.total });
+  } catch (error) {
+    console.log(`[${createExpense.name} error]`, error);
+    return res.boom.badImplementation();
+  }
+}
+
+export async function createExpense(req: Request, res: Response) {
+  try {
+    const payload = req.body;
+    const _id = await ExpensesModel.insertOne({
+      ...payload,
+      date: fromStringToDate(payload.date),
+    });
+
+    return res.status(StatusCodes.CREATED).send({ _id });
   } catch (error) {
     console.log(`[${createExpense.name} error]`, error);
     return res.boom.badImplementation();
@@ -57,6 +71,10 @@ export async function updateExpense(req: Request, res: Response) {
   try {
     const { _id } = req.params;
     const payload = req.body;
+
+    if (payload.date) {
+      payload.date = fromStringToDate(payload.date);
+    }
 
     const expense = await ExpensesModel.findOne(_id);
 
