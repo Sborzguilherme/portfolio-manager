@@ -5,6 +5,7 @@ import {
   getExpenseByIdSchema,
   createExpenseSchema,
   deleteExpenseSchema,
+  updateExpenseSchema,
 } from "../schemas";
 
 const router = Router();
@@ -20,7 +21,11 @@ router.post(
   validate(createExpenseSchema),
   expenseController.createExpense
 );
-router.patch("/expense/:id", expenseController.updateExpense);
+router.patch(
+  "/expense/:_id",
+  validate(updateExpenseSchema),
+  expenseController.updateExpense
+);
 router.delete(
   "/expense/:_id",
   validate(deleteExpenseSchema),

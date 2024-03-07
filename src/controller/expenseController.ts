@@ -29,7 +29,33 @@ export async function createExpense(req: Request, res: Response) {
     return res.boom.badImplementation();
   }
 }
-export function updateExpense() {}
+export async function updateExpense(req: Request, res: Response) {
+  try {
+    const { _id } = req.params;
+    const payload = req.body;
+
+    const expense = await ExpensesModel.findOne(_id);
+
+    if (!expense) {
+      return res.boom.notFound();
+    }
+
+    const updateExpensePayload = {
+      ...expense,
+      ...payload,
+    };
+
+    const updatedExpense = await ExpensesModel.updateOne(
+      _id,
+      updateExpensePayload
+    );
+
+    return res.status(StatusCodes.OK).send(updatedExpense);
+  } catch (error) {
+    console.log(`[${updateExpense.name} error]`, error);
+    return res.boom.badImplementation();
+  }
+}
 
 export async function deleteExpense(req: Request, res: Response) {
   try {
