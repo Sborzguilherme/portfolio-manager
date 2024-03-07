@@ -30,4 +30,19 @@ export async function createExpense(req: Request, res: Response) {
   }
 }
 export function updateExpense() {}
-export function deleteExpense() {}
+
+export async function deleteExpense(req: Request, res: Response) {
+  try {
+    const { _id } = req.params;
+    const deletedExpense = await ExpensesModel.deleteOne(_id);
+
+    if (!deletedExpense) {
+      return res.boom.notFound();
+    }
+
+    return res.status(StatusCodes.NO_CONTENT).send();
+  } catch (error) {
+    console.log(`[${deleteExpense.name} error]`, error);
+    return res.boom.badImplementation();
+  }
+}
