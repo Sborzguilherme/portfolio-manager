@@ -23,12 +23,10 @@ export async function getExpenseById(req: Request, res: Response) {
   }
 }
 
-export async function getExpenses(
-  req: Request<unknown, unknown, unknown, GetExpenses>,
-  res: Response,
-) {
+export async function getExpenses(req: Request, res: Response) {
   try {
-    const { category, startDate, endDate, pageSize, pageNumber } = req.query;
+    const { category, startDate, endDate, pageSize, pageNumber } =
+      req.query as GetExpenses;
 
     const result = await ExpensesModel.find(
       category,
@@ -58,6 +56,7 @@ export async function createExpense(req: Request, res: Response) {
     const _id = await ExpensesModel.insertOne({
       ...payload,
       date: fromStringToDate(payload.date),
+      installments: payload.installments ?? null,
     });
 
     return res.status(StatusCodes.CREATED).send({ _id });

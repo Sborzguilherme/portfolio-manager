@@ -91,11 +91,12 @@ export async function find(
         _id: null,
         expenses: {
           $push: {
-            id: '$_id',
+            _id: '$_id',
             category: '$category',
             description: '$description',
             date: '$date',
             value: '$value',
+            installments: '$installments',
           },
         },
         total: {
