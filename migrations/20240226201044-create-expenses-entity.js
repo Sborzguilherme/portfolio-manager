@@ -1,8 +1,8 @@
-const collectionName = "expenses";
+const collectionName = 'expenses';
 module.exports = {
   async up(db, _client) {
     const collections = (await db.listCollections().toArray()).map(
-      (r) => r.name
+      (r) => r.name,
     );
 
     if (!collections.includes(collectionName)) {

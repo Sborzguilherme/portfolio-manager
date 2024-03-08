@@ -1,40 +1,40 @@
-import { Router } from "express";
-import { expenseController } from "../controller";
-import { validate } from "../middlewares";
+import { Router } from 'express';
+import { expenseController } from '../controller';
+import { validate } from '../middlewares';
 import {
   getExpenseByIdSchema,
   createExpenseSchema,
   deleteExpenseSchema,
   updateExpenseSchema,
   getExpensesSchema,
-} from "../schemas";
+} from '../schemas';
 
 const router = Router();
 
 router.get(
-  "/expense/:_id",
+  '/expense/:_id',
   validate(getExpenseByIdSchema),
-  expenseController.getExpenseById
+  expenseController.getExpenseById,
 );
 router.get(
-  "/expense",
+  '/expense',
   validate(getExpensesSchema),
-  expenseController.getExpenses
+  expenseController.getExpenses,
 );
 router.post(
-  "/expense",
+  '/expense',
   validate(createExpenseSchema),
-  expenseController.createExpense
+  expenseController.createExpense,
 );
 router.patch(
-  "/expense/:_id",
+  '/expense/:_id',
   validate(updateExpenseSchema),
-  expenseController.updateExpense
+  expenseController.updateExpense,
 );
 router.delete(
-  "/expense/:_id",
+  '/expense/:_id',
   validate(deleteExpenseSchema),
-  expenseController.deleteExpense
+  expenseController.deleteExpense,
 );
 
 export default router;

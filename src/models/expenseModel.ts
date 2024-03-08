@@ -1,33 +1,33 @@
-import { ObjectId } from "mongodb";
-import { getDbClient, collectionNames } from "../db";
+import { ObjectId } from 'mongodb';
+import { getDbClient, collectionNames } from '../db';
 import {
   CreateExpense,
   UpdateExpense,
   Expense,
   GetAllExpenses,
-} from "../types";
+} from '../types';
 
 const ExpenseColletction = getDbClient().collection(collectionNames.EXPENSES);
 
-export async function findOne(_id: Expense["_id"]) {
+export async function findOne(_id: Expense['_id']) {
   return ExpenseColletction.findOne(new ObjectId(_id));
 }
 
 export async function insertOne(
-  expense: CreateExpense
-): Promise<Expense["_id"]> {
+  expense: CreateExpense,
+): Promise<Expense['_id']> {
   const insertedDocument = await ExpenseColletction.insertOne(expense);
   return insertedDocument.insertedId.toString();
 }
 
 export async function updateOne(
-  _id: Expense["_id"],
-  expense: UpdateExpense
+  _id: Expense['_id'],
+  expense: UpdateExpense,
 ): Promise<Expense> {
   const updatedDocument = await ExpenseColletction.findOneAndUpdate(
     { _id: new ObjectId(_id) },
     { $set: expense },
-    { returnDocument: "after" }
+    { returnDocument: 'after' },
   );
 
   return {
@@ -36,7 +36,7 @@ export async function updateOne(
   };
 }
 
-export async function deleteOne(_id: Expense["_id"]) {
+export async function deleteOne(_id: Expense['_id']) {
   const deletedDocument = await ExpenseColletction.deleteOne({
     _id: new ObjectId(_id),
   });
@@ -44,11 +44,11 @@ export async function deleteOne(_id: Expense["_id"]) {
 }
 
 export async function find(
-  category: Expense["category"],
+  category: Expense['category'],
   startDate: Date,
   endDate: Date,
   pageSize: number,
-  pageNumber: number
+  pageNumber: number,
 ): Promise<GetAllExpenses> {
   let filters = {};
   let skip = 0;
@@ -91,11 +91,11 @@ export async function find(
         _id: null,
         expenses: {
           $push: {
-            id: "$_id",
-            category: "$category",
-            description: "$description",
-            date: "$date",
-            value: "$value",
+            id: '$_id',
+            category: '$category',
+            description: '$description',
+            date: '$date',
+            value: '$value',
           },
         },
         total: {
@@ -104,27 +104,27 @@ export async function find(
       },
     },
     {
-      $unwind: "$expenses",
+      $unwind: '$expenses',
     },
     {
       $sort: {
-        "expenses.date": 1,
+        'expenses.date': 1,
       },
     },
     {
       $group: {
         _id: null,
         expenses: {
-          $push: "$expenses",
+          $push: '$expenses',
         },
-        total: { $first: "$total" },
+        total: { $first: '$total' },
       },
     },
     {
       $project: {
         _id: 0,
         expenses: {
-          $slice: ["$expenses", skip, limit],
+          $slice: ['$expenses', skip, limit],
         },
         total: 1,
       },

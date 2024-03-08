@@ -1,9 +1,9 @@
-import { z } from "zod";
+import { z } from 'zod';
 import {
   createExpenseBodySchema,
   updateExpenseBodySchema,
   getExpensesQuery,
-} from "../schemas";
+} from '../schemas';
 
 export type CreateExpense = z.infer<typeof createExpenseBodySchema>;
 export type Expense = CreateExpense & {

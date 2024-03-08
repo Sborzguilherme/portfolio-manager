@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const getExpenseByIdSchema = z.object({
   params: z.object({

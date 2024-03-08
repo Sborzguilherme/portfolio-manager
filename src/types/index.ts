@@ -1,1 +1,1 @@
-export * from "./expenseTypes";
+export * from './expenseTypes';

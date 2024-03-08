@@ -1,1 +1,1 @@
-export * as ExpensesModel from "./expenseModel";
+export * as ExpensesModel from './expenseModel';

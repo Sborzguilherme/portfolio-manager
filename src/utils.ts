@@ -1,6 +1,6 @@
-import moment from "moment";
+import moment from 'moment';
 
-const BRAZILIAN_DATE_FORMAT = "DD/MM/YYYY";
+const BRAZILIAN_DATE_FORMAT = 'DD/MM/YYYY';
 
 export function fromStringToDate(str: string) {
   return moment(str, BRAZILIAN_DATE_FORMAT).toDate();

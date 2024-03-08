@@ -1,1 +1,1 @@
-export * as expenseController from "./expenseController";
+export * as expenseController from './expenseController';

@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
-import { StatusCodes } from "http-status-codes";
-import { ExpensesModel } from "../models";
-import { GetExpenses } from "types";
-import { fromDateToString, fromStringToDate } from "../utils";
+import { Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
+import { ExpensesModel } from '../models';
+import { GetExpenses } from 'types';
+import { fromDateToString, fromStringToDate } from '../utils';
 
 export async function getExpenseById(req: Request, res: Response) {
   try {
@@ -24,8 +24,8 @@ export async function getExpenseById(req: Request, res: Response) {
 }
 
 export async function getExpenses(
-  req: Request<{}, {}, {}, GetExpenses>,
-  res: Response
+  req: Request<unknown, unknown, unknown, GetExpenses>,
+  res: Response,
 ) {
   try {
     const { category, startDate, endDate, pageSize, pageNumber } = req.query;
@@ -35,7 +35,7 @@ export async function getExpenses(
       startDate,
       endDate,
       parseInt(pageSize),
-      parseInt(pageNumber)
+      parseInt(pageNumber),
     );
 
     const formattedExpenses = result.expenses.map((r) => ({
@@ -89,7 +89,7 @@ export async function updateExpense(req: Request, res: Response) {
 
     const updatedExpense = await ExpensesModel.updateOne(
       _id,
-      updateExpensePayload
+      updateExpensePayload,
     );
 
     return res.status(StatusCodes.OK).send(updatedExpense);
