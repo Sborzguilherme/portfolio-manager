@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { expenseController } from '../controller';
-import { validate } from '../middlewares';
+import { validate, uploadMiddleware } from '../middlewares';
 import {
   getExpenseByIdSchema,
   createExpenseSchema,
@@ -35,6 +35,12 @@ router.delete(
   '/expense/:_id',
   validate(deleteExpenseSchema),
   expenseController.deleteExpense,
+);
+
+router.post(
+  '/expense/import',
+  uploadMiddleware.single('csvFile'),
+  expenseController.importExpenses,
 );
 
 export default router;

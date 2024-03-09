@@ -1,8 +1,14 @@
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { createReadStream } from 'fs';
+import { parse } from 'fast-csv';
 import { ExpensesModel } from '../models';
 import { GetExpenses } from 'types';
-import { fromDateToString, fromStringToDate } from '../utils';
+import {
+  fromDateToString,
+  fromStringToDate,
+  formatExpensesFromCSV,
+} from '../utils';
 
 export async function getExpenseById(req: Request, res: Response) {
   try {
@@ -110,6 +116,32 @@ export async function deleteExpense(req: Request, res: Response) {
     return res.status(StatusCodes.NO_CONTENT).send();
   } catch (error) {
     console.log(`[${deleteExpense.name} error]`, error);
+    return res.boom.badImplementation();
+  }
+}
+
+export async function importExpenses(req: Request, res: Response) {
+  try {
+    const path = `./tmp/${req.file.filename}`;
+    const expenses = [];
+
+    createReadStream(path)
+      .pipe(parse({ headers: true }))
+      .on('error', (error) => {
+        throw error.message;
+      })
+      .on('data', (row) => {
+        expenses.push(row);
+      })
+      .on('end', async () => {
+        const formattedExpenses = expenses.map(formatExpensesFromCSV);
+        const result = await ExpensesModel.bulkInsert(formattedExpenses);
+        res.status(StatusCodes.OK).send(result);
+      });
+
+    return true;
+  } catch (error) {
+    console.log(`[${importExpenses.name} error]`, error);
     return res.boom.badImplementation();
   }
 }

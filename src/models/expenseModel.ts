@@ -141,3 +141,11 @@ export async function find(
 
   return expenses[0];
 }
+
+export async function bulkInsert(expenses): Promise<{ _ids: string[] }> {
+  const { insertedIds } = await ExpenseColletction.insertMany(expenses);
+
+  return {
+    _ids: Object.values(insertedIds).map((_id) => _id.toString()),
+  };
+}

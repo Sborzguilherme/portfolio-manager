@@ -16,3 +16,10 @@ export type GetAllExpenses = {
   expenses: Expense[];
   total: number;
 };
+
+export type ExpenseCSV = {
+  Data: string;
+  Categoria: string;
+  Descricao: string;
+  Valor: string;
+};
