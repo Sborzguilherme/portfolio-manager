@@ -142,10 +142,23 @@ export async function find(
   return expenses[0];
 }
 
-export async function bulkInsert(expenses): Promise<{ _ids: string[] }> {
-  const { insertedIds } = await ExpenseColletction.insertMany(expenses);
-
+function mapIdsFromBulkInsert(insertedIds: { [key: number]: ObjectId }) {
   return {
     _ids: Object.values(insertedIds).map((_id) => _id.toString()),
   };
+}
+
+export async function bulkInsert(expenses): Promise<{ _ids: string[] }> {
+  try {
+    const { insertedIds } = await ExpenseColletction.insertMany(expenses, {
+      ordered: false,
+    });
+
+    return mapIdsFromBulkInsert(insertedIds);
+  } catch (error) {
+    console.log(
+      `[expenseModel.${bulkInsert.name}]: Number of ignored duplicate records = ${error.writeErrors.length}`,
+    );
+    return mapIdsFromBulkInsert(error.result.insertedIds);
+  }
 }
