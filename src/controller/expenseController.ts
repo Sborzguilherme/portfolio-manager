@@ -1,22 +1,23 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { createReadStream } from 'fs';
 import { parse } from 'fast-csv';
 import { ExpensesModel } from '../models';
 import { GetExpenses } from 'types';
-import {
-  fromDateToString,
-  fromStringToDate,
-  formatExpensesFromCSV,
-} from '../utils';
+import { fromDateToString, fromStringToDate, formatExpensesFromCSV } from '../utils';
+import { APIError } from '../APIError';
+import { HTTP_ERRORS } from '../contants';
 
-export async function getExpenseById(req: Request, res: Response) {
+export async function getExpenseById(req: Request, res: Response, next: NextFunction) {
   try {
     const { _id } = req.params;
     const expense = await ExpensesModel.findOne(_id);
 
     if (!expense) {
-      return res.boom.notFound();
+      throw new APIError({
+        method: getExpenseById.name,
+        ...HTTP_ERRORS.NOT_FOUND,
+      });
     }
 
     return res.status(StatusCodes.OK).send({
@@ -24,15 +25,14 @@ export async function getExpenseById(req: Request, res: Response) {
       date: fromDateToString(expense.date),
     });
   } catch (error) {
-    console.log(`[${getExpenseById.name} error]`, error);
-    return res.boom.badImplementation();
+    next(new APIError({ method: getExpenseById.name }));
+    return true;
   }
 }
 
-export async function getExpenses(req: Request, res: Response) {
+export async function getExpenses(req: Request, res: Response, next: NextFunction) {
   try {
-    const { category, startDate, endDate, pageSize, pageNumber } =
-      req.query as GetExpenses;
+    const { category, startDate, endDate, pageSize, pageNumber } = req.query as GetExpenses;
 
     const result = await ExpensesModel.find(
       category,
@@ -47,16 +47,14 @@ export async function getExpenses(req: Request, res: Response) {
       date: fromDateToString(r.date),
     }));
 
-    return res
-      .status(StatusCodes.OK)
-      .send({ expenses: formattedExpenses, total: result.total });
+    return res.status(StatusCodes.OK).send({ expenses: formattedExpenses, total: result.total });
   } catch (error) {
-    console.log(`[${createExpense.name} error]`, error);
-    return res.boom.badImplementation();
+    next(new APIError({ method: getExpenses.name }));
+    return true;
   }
 }
 
-export async function createExpense(req: Request, res: Response) {
+export async function createExpense(req: Request, res: Response, next: NextFunction) {
   try {
     const payload = req.body;
     const _id = await ExpensesModel.insertOne({
@@ -67,12 +65,12 @@ export async function createExpense(req: Request, res: Response) {
 
     return res.status(StatusCodes.CREATED).send({ _id });
   } catch (error) {
-    console.log(`[${createExpense.name} error]`, error);
-    return res.boom.badImplementation();
+    next(new APIError({ method: createExpense.name }));
+    return true;
   }
 }
 
-export async function updateExpense(req: Request, res: Response) {
+export async function updateExpense(req: Request, res: Response, next: NextFunction) {
   try {
     const { _id } = req.params;
     const payload = req.body;
@@ -84,7 +82,7 @@ export async function updateExpense(req: Request, res: Response) {
     const expense = await ExpensesModel.findOne(_id);
 
     if (!expense) {
-      return res.boom.notFound();
+      next(new APIError({ method: createExpense.name, ...HTTP_ERRORS.NOT_FOUND }));
     }
 
     const updateExpensePayload = {
@@ -92,35 +90,32 @@ export async function updateExpense(req: Request, res: Response) {
       ...payload,
     };
 
-    const updatedExpense = await ExpensesModel.updateOne(
-      _id,
-      updateExpensePayload,
-    );
+    const updatedExpense = await ExpensesModel.updateOne(_id, updateExpensePayload);
 
     return res.status(StatusCodes.OK).send(updatedExpense);
   } catch (error) {
-    console.log(`[${updateExpense.name} error]`, error);
-    return res.boom.badImplementation();
+    next(new APIError({ method: createExpense.name }));
+    return true;
   }
 }
 
-export async function deleteExpense(req: Request, res: Response) {
+export async function deleteExpense(req: Request, res: Response, next: NextFunction) {
   try {
     const { _id } = req.params;
     const deletedExpense = await ExpensesModel.deleteOne(_id);
 
     if (!deletedExpense) {
-      return res.boom.notFound();
+      next(new APIError({ method: deleteExpense.name, ...HTTP_ERRORS.NOT_FOUND }));
     }
 
     return res.status(StatusCodes.NO_CONTENT).send();
   } catch (error) {
-    console.log(`[${deleteExpense.name} error]`, error);
-    return res.boom.badImplementation();
+    next(new APIError({ method: deleteExpense.name }));
+    return true;
   }
 }
 
-export async function importExpenses(req: Request, res: Response) {
+export async function importExpenses(req: Request, res: Response, next: NextFunction) {
   try {
     const path = `./tmp/${req.file.filename}`;
     const expenses = [];
@@ -141,7 +136,7 @@ export async function importExpenses(req: Request, res: Response) {
 
     return true;
   } catch (error) {
-    console.log(`[${importExpenses.name} error]`, error);
-    return res.boom.badImplementation();
+    next(new APIError({ method: importExpenses.name }));
+    return true;
   }
 }
