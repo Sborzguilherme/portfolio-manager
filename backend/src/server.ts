@@ -4,7 +4,7 @@ import { connectMongoDB } from './db';
 import { errorHandler } from './middlewares';
 
 const app = express();
-const port = process.env.NODE_DOCKER_PORT || 8080;
+const port = process.env.SERVER_PORT || 8080;
 const serverName = 'porfolio-manager';
 
 async function main() {

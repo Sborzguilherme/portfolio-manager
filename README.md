@@ -2,14 +2,15 @@
 
 ## Commands
 
-### Building the backend services
+### Starting the services
 
-`docker compose --env-file "./backend/.env" build portfolio-manager-be mongo db`
+`docker compose up portfolio-manager-be portfolio-manager-fe mongodb`
 
-### Starting backend services
-`docker compose --env-file "./backend/.env" up portfolio-manager-be mongo db`
 
 ## References:
+
+### Infra
+- [Env variables docker-compose](https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with---env-file)
 
 ### Backend
 

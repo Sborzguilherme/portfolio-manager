@@ -9,25 +9,41 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: base
-    env_file: ./backend/.env
+    env_file: 
+      - path: .env
+      - path: ./backend/.env
+        required: false
     volumes:
       - ./backend/src:/home/node/app/src
       - ./backend/nodemon.json:/home/node/app/nodemon.json
     expose:
-      - $NODE_LOCAL_PORT
+      - $PORTFOLIO_MANAGER_BE_EXTERNAL_PORT
     ports:
-      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+      - $PORTFOLIO_MANAGER_BE_EXTERNAL_PORT:$PORTFOLIO_MANAGER_BE_INTERNAL_PORT
     environment:
       - DB_HOST=mongodb
       - DB_NAME=$MONGODB_DATABASE
-      - DB_PORT=$MONGODB_DOCKER_PORT
+      - DB_PORT=$MONGODB_INTERNAL_PORT
+      - SERVER_PORT=$PORTFOLIO_MANAGER_BE_INTERNAL_PORT
     command: npm run dev
+  portfolio-manager-fe:
+    container_name: portfolio-manager-fe
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+    expose:
+      - $PORTFOLIO_MANAGER_FE_EXTERNAL_PORT
+    ports:
+      - $PORTFOLIO_MANAGER_FE_EXTERNAL_PORT:$PORTFOLIO_MANAGER_FE_INTERNAL_PORT
+    command: npm run serve
   mongodb:
     image: mongo:5.0.2
     restart: unless-stopped
     env_file: ./backend/.env
     ports:
-      - $MONGODB_LOCAL_PORT:$MONGODB_DOCKER_PORT
+      - $MONGODB_EXTERNAL_PORT:$MONGODB_INTERNAL_PORT
     volumes:
       - db:/data/db
 volumes:
