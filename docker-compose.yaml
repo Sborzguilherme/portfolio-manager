@@ -1,18 +1,18 @@
 version: "3.7"
 
 services:
-  portfolio-manager:
-    container_name: portfolio-manager
+  portfolio-manager-be:
+    container_name: portfolio-manager-be
     depends_on:
       - mongodb
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
       target: base
-    env_file: .env
+    env_file: ./backend/.env
     volumes:
-      - ./src:/home/node/app/src
-      - ./nodemon.json:/home/node/app/nodemon.json
+      - ./backend/src:/home/node/app/src
+      - ./backend/nodemon.json:/home/node/app/nodemon.json
     expose:
       - $NODE_LOCAL_PORT
     ports:
@@ -25,7 +25,7 @@ services:
   mongodb:
     image: mongo:5.0.2
     restart: unless-stopped
-    env_file: ./.env
+    env_file: ./backend/.env
     ports:
       - $MONGODB_LOCAL_PORT:$MONGODB_DOCKER_PORT
     volumes:
