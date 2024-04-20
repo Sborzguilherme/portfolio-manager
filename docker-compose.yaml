@@ -9,7 +9,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: base
-    env_file: 
+    env_file:
       - path: .env
       - path: ./backend/.env
         required: false
@@ -41,7 +41,7 @@ services:
   mongodb:
     image: mongo:5.0.2
     restart: unless-stopped
-    env_file: ./backend/.env
+    env_file: .env
     ports:
       - $MONGODB_EXTERNAL_PORT:$MONGODB_INTERNAL_PORT
     volumes:
