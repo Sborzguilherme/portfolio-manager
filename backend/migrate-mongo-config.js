@@ -1,18 +1,13 @@
-const { DB_HOST, DB_PORT } = process.env;
+require('dotenv').config();
+const { MONGODB_HOST, MONGODB_EXTERNAL_PORT, MONGODB_DATABASE } = process.env;
 
-const dbPort = DB_PORT || '7017';
-const dbHost = DB_HOST || 'localhost';
+const dbPort = MONGODB_EXTERNAL_PORT || '7017';
+const dbHost = MONGODB_HOST || 'localhost';
 
 const config = {
   mongodb: {
     url: `mongodb://${dbHost}:${dbPort}`,
-
-    databaseName: 'local',
-
-    options: {
-      useNewUrlParser: true, // removes a deprecation warning when connecting
-      useUnifiedTopology: true, // removes a deprecating warning when connecting
-    },
+    databaseName: MONGODB_DATABASE,
   },
 
   // The migrations dir, can be an relative or absolute path. Only edit this when really necessary.
