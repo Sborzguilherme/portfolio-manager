@@ -8,7 +8,7 @@ export const getExpenseByIdSchema = z.object({
 
 export const createExpenseBodySchema = z
   .object({
-    date: z.coerce.date(),
+    date: z.string().date(),
     category: z.string(),
     description: z.string(),
     value: z.number(),
@@ -27,7 +27,7 @@ export const createExpenseSchema = z.object({
 
 export const updateExpenseBodySchema = z
   .object({
-    date: z.coerce.date().optional(),
+    date: z.string().date().optional(),
     category: z.string().optional(),
     description: z.string().optional(),
     value: z.number().optional(),
@@ -56,8 +56,8 @@ export const deleteExpenseSchema = z.object({
 export const getExpensesQuery = z
   .object({
     category: z.string().optional(),
-    startDate: z.coerce.date().optional(),
-    endDate: z.coerce.date().optional(),
+    startDate: z.string().date().optional(),
+    endDate: z.string().date().optional(),
     pageSize: z.string(),
     pageNumber: z.string(),
   })

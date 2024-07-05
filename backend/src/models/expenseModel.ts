@@ -1,38 +1,36 @@
 import { ObjectId } from 'mongodb';
 import { getDbClient, collectionNames } from '../db';
-import {
-  CreateExpense,
-  UpdateExpense,
-  Expense,
-  GetAllExpenses,
-} from '../types';
+import { CreateExpense, UpdateExpense, Expense, GetAllExpenses, GetExpensesQuery } from '../types';
 
 const ExpenseColletction = getDbClient().collection(collectionNames.EXPENSES);
 
 export async function findOne(_id: Expense['_id']) {
-  return ExpenseColletction.findOne(new ObjectId(_id));
+  return ExpenseColletction.findOne(new ObjectId(_id)) as unknown as Promise<Expense | null>;
 }
 
-export async function insertOne(
-  expense: CreateExpense,
-): Promise<Expense['_id']> {
+export async function insertOne(expense: CreateExpense): Promise<Expense['_id']> {
   const insertedDocument = await ExpenseColletction.insertOne(expense);
   return insertedDocument.insertedId.toString();
 }
 
-export async function updateOne(
-  _id: Expense['_id'],
-  expense: UpdateExpense,
-): Promise<Expense> {
+export async function updateOne(_id: Expense['_id'], expense: UpdateExpense): Promise<Expense> {
   const updatedDocument = await ExpenseColletction.findOneAndUpdate(
     { _id: new ObjectId(_id) },
     { $set: expense },
     { returnDocument: 'after' },
   );
 
+  if (!updatedDocument) {
+    throw Error(`Error updating document ${_id}`);
+  }
+
   return {
-    ...updatedDocument,
     _id: updatedDocument._id.toString(),
+    category: updatedDocument.category,
+    description: updatedDocument.description,
+    date: updatedDocument.date,
+    value: updatedDocument.value,
+    installments: updatedDocument.installments,
   };
 }
 
@@ -43,13 +41,13 @@ export async function deleteOne(_id: Expense['_id']) {
   return deletedDocument.deletedCount;
 }
 
-export async function find(
-  category: Expense['category'],
-  startDate: Date,
-  endDate: Date,
-  pageSize: number,
-  pageNumber: number,
-): Promise<GetAllExpenses> {
+export async function find({
+  category,
+  startDate,
+  endDate,
+  pageSize,
+  pageNumber,
+}: GetExpensesQuery): Promise<GetAllExpenses> {
   let filters = {};
   let skip = 0;
   let limit = 100;
@@ -155,7 +153,7 @@ export async function bulkInsert(expenses): Promise<{ _ids: string[] }> {
     });
 
     return mapIdsFromBulkInsert(insertedIds);
-  } catch (error) {
+  } catch (error: any) {
     console.log(
       `[expenseModel.${bulkInsert.name}]: Number of ignored duplicate records = ${error.writeErrors.length}`,
     );

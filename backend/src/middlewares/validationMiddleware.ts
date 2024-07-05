@@ -1,6 +1,6 @@
 import { ZodSchema } from 'zod';
 import { Request, Response, NextFunction } from 'express';
-import { HTTP_ERRORS } from '../contants';
+import { HTTP_ERRORS } from '../constants';
 
 export function validate(schema: ZodSchema) {
   return function (req: Request, res: Response, next: NextFunction) {
@@ -12,7 +12,7 @@ export function validate(schema: ZodSchema) {
       });
 
       return next();
-    } catch (err) {
+    } catch (err: any) {
       console.log(`[${validate.name} error]`, err.errors);
       return res.status(HTTP_ERRORS.VALIDATION_ERROR.status).send({
         success: false,

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { APIError } from '../APIError';
-import { HTTP_ERRORS } from '../contants';
+import { HTTP_ERRORS } from '../constants';
 
 export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction) {
   let { status, message } = HTTP_ERRORS.INTERNAL_SERVER_ERROR;

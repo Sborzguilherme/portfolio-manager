@@ -3,10 +3,16 @@ import { StatusCodes } from 'http-status-codes';
 import { createReadStream } from 'fs';
 import { parse } from 'fast-csv';
 import { ExpensesModel } from '../models';
-import { GetExpenses } from 'types';
-import { fromDateToString, fromStringToDate, formatExpensesFromCSV } from '../utils';
+import { CreateExpenseDto, ExpenseCSVDto, GetExpensesQueryDto, UpdateExpenseDto } from 'types';
+import { formatExpensesFromCSV } from '../utils';
 import { APIError } from '../APIError';
-import { HTTP_ERRORS } from '../contants';
+import { HTTP_ERRORS } from '../constants';
+import {
+  createExpenseFromDto,
+  fromExpenseToDto,
+  getExpenseQueryFromDto,
+  updateExpenseFromDto,
+} from '../dto';
 
 export async function getExpenseById(req: Request, res: Response, next: NextFunction) {
   try {
@@ -20,10 +26,7 @@ export async function getExpenseById(req: Request, res: Response, next: NextFunc
       });
     }
 
-    return res.status(StatusCodes.OK).send({
-      ...expense,
-      date: fromDateToString(expense.date),
-    });
+    return res.status(StatusCodes.OK).send(fromExpenseToDto(expense));
   } catch (error) {
     next(new APIError({ method: getExpenseById.name }));
     return true;
@@ -32,20 +35,10 @@ export async function getExpenseById(req: Request, res: Response, next: NextFunc
 
 export async function getExpenses(req: Request, res: Response, next: NextFunction) {
   try {
-    const { category, startDate, endDate, pageSize, pageNumber } = req.query as GetExpenses;
+    const getExpensesQuery = getExpenseQueryFromDto(req.query as GetExpensesQueryDto);
+    const result = await ExpensesModel.find(getExpensesQuery);
 
-    const result = await ExpensesModel.find(
-      category,
-      startDate,
-      endDate,
-      parseInt(pageSize),
-      parseInt(pageNumber),
-    );
-
-    const formattedExpenses = result.expenses.map((r) => ({
-      ...r,
-      date: fromDateToString(r.date),
-    }));
+    const formattedExpenses = result.expenses.map(fromExpenseToDto);
 
     return res.status(StatusCodes.OK).send({ expenses: formattedExpenses, total: result.total });
   } catch (error) {
@@ -56,12 +49,9 @@ export async function getExpenses(req: Request, res: Response, next: NextFunctio
 
 export async function createExpense(req: Request, res: Response, next: NextFunction) {
   try {
-    const payload = req.body;
-    const _id = await ExpensesModel.insertOne({
-      ...payload,
-      date: fromStringToDate(payload.date),
-      installments: payload.installments ?? null,
-    });
+    const createExpense = createExpenseFromDto(req.body as CreateExpenseDto);
+
+    const _id = await ExpensesModel.insertOne(createExpense);
 
     return res.status(StatusCodes.CREATED).send({ _id });
   } catch (error) {
@@ -73,11 +63,6 @@ export async function createExpense(req: Request, res: Response, next: NextFunct
 export async function updateExpense(req: Request, res: Response, next: NextFunction) {
   try {
     const { _id } = req.params;
-    const payload = req.body;
-
-    if (payload.date) {
-      payload.date = fromStringToDate(payload.date);
-    }
 
     const expense = await ExpensesModel.findOne(_id);
 
@@ -85,10 +70,7 @@ export async function updateExpense(req: Request, res: Response, next: NextFunct
       next(new APIError({ method: createExpense.name, ...HTTP_ERRORS.NOT_FOUND }));
     }
 
-    const updateExpensePayload = {
-      ...expense,
-      ...payload,
-    };
+    const updateExpensePayload = updateExpenseFromDto(req.body as UpdateExpenseDto);
 
     const updatedExpense = await ExpensesModel.updateOne(_id, updateExpensePayload);
 
@@ -117,15 +99,15 @@ export async function deleteExpense(req: Request, res: Response, next: NextFunct
 
 export async function importExpenses(req: Request, res: Response, next: NextFunction) {
   try {
-    const path = `./tmp/${req.file.filename}`;
-    const expenses = [];
+    const path = `./tmp/${req?.file?.filename}`;
+    const expenses: ExpenseCSVDto[] = [];
 
     createReadStream(path)
       .pipe(parse({ headers: true }))
       .on('error', (error) => {
         throw error.message;
       })
-      .on('data', (row) => {
+      .on('data', (row: ExpenseCSVDto) => {
         expenses.push(row);
       })
       .on('end', async () => {
