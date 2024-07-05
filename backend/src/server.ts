@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import router from './router';
 import { connectMongoDB } from './db';
 import { errorHandler } from './middlewares';
@@ -12,6 +13,11 @@ async function main() {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
+  app.use(
+    cors({
+      origin: 'http://localhost:8081',
+    }),
+  );
 
   app.use(router);
 
