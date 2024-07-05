@@ -1,14 +1,14 @@
 <template>
-  <SignupFormVue />
+  <CreateExpense />
 </template>
 
 <script lang="ts">
-import SignupFormVue from "./components/SignupForm.vue";
+import CreateExpense from "./components/CreateExpense.vue";
 
 export default {
   name: "App",
   components: {
-    SignupFormVue,
+    CreateExpense,
   },
 };
 </script>

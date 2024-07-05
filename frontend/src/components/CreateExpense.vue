@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form @submit.prevent="handleSubmit">
+    <form @submit="handleSubmit">
       <label> Date</label>
       <input type="date" required v-model="date" />
 
@@ -24,8 +24,8 @@
       <label> Description </label>
       <input type="text" required v-model="description" />
 
-      <label> Amount: </label>
-      <input type="number" step="0.01" required v-model="amount" />
+      <label> Value: </label>
+      <input type="number" step="0.01" required v-model="value" />
 
       <div class="submit">
         <button>Save</button>
@@ -41,16 +41,25 @@ export default {
       date: "",
       category: "",
       description: "",
-      amount: 0,
+      value: 0,
     };
   },
   methods: {
     handleSubmit() {
-      console.log("Submitted");
-      console.log(this.date);
-      console.log(this.category);
-      console.log(this.description);
-      console.log(this.amount);
+      console.log("this.date", this.date);
+
+      fetch("http://localhost:8080/expense", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date: this.date,
+          category: this.category,
+          description: this.description,
+          value: this.value,
+        }),
+      }).catch((error) => console.log(error));
     },
   },
 };
