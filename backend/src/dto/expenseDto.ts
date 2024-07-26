@@ -22,12 +22,31 @@ export function getExpenseQueryFromDto(expenseQueryDto: GetExpensesQueryDto): Ge
   };
 }
 
-export function createExpenseFromDto(expenseDto: CreateExpenseDto): CreateExpense {
-  return {
-    ...expenseDto,
-    date: fromStringToDate(expenseDto.date, DATE_FORMAT.STRING_INPUT_FORMAT),
-    installments: expenseDto.installments ?? null,
-  };
+export function createExpenseFromDto(expenseDto: CreateExpenseDto): CreateExpense[] {
+  if (!expenseDto.installments || expenseDto.installments < 2) {
+    return [
+      {
+        ...expenseDto,
+        date: fromStringToDate(expenseDto.date, DATE_FORMAT.STRING_INPUT_FORMAT),
+        installments: null,
+      },
+    ];
+  }
+
+  const expenses: CreateExpense[] = [];
+
+  for (let i = 1; i <= expenseDto.installments; i++) {
+    expenses.push({
+      ...expenseDto,
+      date: fromStringToDate(expenseDto.date, DATE_FORMAT.STRING_INPUT_FORMAT),
+      installments: {
+        current: i,
+        total: expenseDto.installments,
+      },
+    });
+  }
+
+  return expenses;
 }
 
 export function updateExpenseFromDto(expenseDto: UpdateExpenseDto): UpdateExpense {

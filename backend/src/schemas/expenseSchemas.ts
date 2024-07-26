@@ -12,12 +12,7 @@ export const createExpenseBodySchema = z
     category: z.string(),
     description: z.string(),
     value: z.number(),
-    installments: z
-      .object({
-        current: z.number(),
-        total: z.number(),
-      })
-      .optional(),
+    installments: z.number().optional().nullable(),
   })
   .strict();
 

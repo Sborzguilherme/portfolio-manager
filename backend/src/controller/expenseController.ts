@@ -49,9 +49,9 @@ export async function getExpenses(req: Request, res: Response, next: NextFunctio
 
 export async function createExpense(req: Request, res: Response, next: NextFunction) {
   try {
-    const createExpense = createExpenseFromDto(req.body as CreateExpenseDto);
+    const expenses = createExpenseFromDto(req.body as CreateExpenseDto);
 
-    const _id = await ExpensesModel.insertOne(createExpense);
+    const _id = await ExpensesModel.bulkInsert(expenses);
 
     return res.status(StatusCodes.CREATED).send({ _id });
   } catch (error) {

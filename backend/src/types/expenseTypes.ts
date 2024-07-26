@@ -5,7 +5,10 @@ export type CreateExpenseDto = z.infer<typeof createExpenseBodySchema>;
 export type UpdateExpenseDto = z.infer<typeof updateExpenseBodySchema>;
 export type GetExpensesQueryDto = z.infer<typeof getExpensesQuery>;
 
-type Installments = CreateExpenseDto['installments'];
+type Installments = {
+  current: number;
+  total: number;
+};
 
 export type Expense = {
   _id: string;
