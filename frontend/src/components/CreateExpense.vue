@@ -1,5 +1,7 @@
 <template>
   <div>
+    <h3>Add expense</h3>
+
     <form @submit="handleSubmit">
       <label> Date</label>
       <input type="date" required v-model="date" />
@@ -24,11 +26,15 @@
       <label> Description </label>
       <input type="text" required v-model="description" />
 
-      <label> Value: </label>
+      <label> Value </label>
       <input type="number" step="0.01" required v-model="value" />
 
-      <div class="submit">
-        <button>Save</button>
+      <label> installments </label>
+      <input type="number" step="1" v-model="installments" />
+
+      <div class="endButtons">
+        <button class="cancelButton">Cancel</button>
+        <button class="submitButton">Submit</button>
       </div>
     </form>
   </div>
@@ -42,12 +48,11 @@ export default {
       category: "",
       description: "",
       value: 0,
+      installments: null,
     };
   },
   methods: {
     handleSubmit() {
-      console.log("this.date", this.date);
-
       fetch("http://localhost:8080/expense", {
         method: "POST",
         headers: {
@@ -58,6 +63,7 @@ export default {
           category: this.category,
           description: this.description,
           value: this.value,
+          installments: this.installments,
         }),
       }).catch((error) => console.log(error));
     },
@@ -73,6 +79,13 @@ form {
   text-align: left;
   padding: 40px;
   border-radius: 10px;
+}
+
+h3 {
+  max-width: 420px;
+  margin: 20px auto;
+  text-align: left;
+  padding: 30px;
 }
 
 label {
@@ -104,17 +117,27 @@ input[type="checkbox"] {
   top: 2px;
 }
 
-button {
-  background: #0b6dff;
+.submitButton {
+  background: #2b8608;
   border: 0;
   padding: 10px 20px;
   margin-top: 20px;
   color: white;
-  border-radius: 20px;
+  border-radius: 5px;
 }
 
-.submit {
-  text-align: center;
+.cancelButton {
+  background: #cb250b;
+  border: 0;
+  padding: 10px 20px;
+  margin-top: 20px;
+  margin-right: 5px;
+  color: white;
+  border-radius: 5px;
+}
+
+.endButtons {
+  text-align: right;
 }
 
 .error {
