@@ -1,15 +1,15 @@
 # portfolio-manager
 
-## Commands
+### Starting the project
 
-### Starting the services
+`docker-compose up mongodb -d && docker-compose up portfolio-manager-be portfolio-manager-fe`
 
-`docker compose up portfolio-manager-be portfolio-manager-fe mongodb`
-
+Open `localhost:8081`
 
 ## References:
 
 ### Infra
+
 - [Env variables docker-compose](https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-with---env-file)
 
 ### Backend
