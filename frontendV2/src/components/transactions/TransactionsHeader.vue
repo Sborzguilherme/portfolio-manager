@@ -12,20 +12,145 @@
           <span class="text-sm font-medium text-gray-900">Import</span>
         </router-link>
 
-        <router-link
-          to="/transactions/new"
+        <button
+          @click="openModal"
           class="rounded-lg bg-gray-900 text-white flex items-center gap-1 justify-center px-3 py-2"
         >
           <span class="material-icons">add</span>
           <span class="text-sm font-medium">New Transaction</span>
-        </router-link>
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal for adding new transaction -->
+    <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-content">
+        <h2>Add New Transaction</h2>
+
+        <!-- Form inside Modal -->
+        <form @submit.prevent="submitTransaction">
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input
+              v-model="newTransaction.date"
+              type="date"
+              id="date"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input
+              v-model="newTransaction.name"
+              type="text"
+              id="name"
+              placeholder="Enter name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="category">Category</label>
+            <input
+              v-model="newTransaction.category"
+              type="text"
+              id="category"
+              placeholder="Enter category"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="amount">Amount</label>
+            <input
+              v-model="newTransaction.amount"
+              type="number"
+              id="amount"
+              placeholder="Enter amount"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="installments">Installments</label>
+            <input
+              v-model="newTransaction.installments"
+              type="number"
+              id="installments"
+              placeholder="Enter installments"
+              required
+            />
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="submit-btn">Add Transaction</button>
+            <button type="button" class="cancel-btn" @click="closeModal">
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </header>
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      isModalOpen: false,
+      transactions: [
+        {
+          date: "2024-09-01",
+          name: "Grocery Shopping",
+          category: "Groceries",
+          amount: 100,
+          installments: 2,
+        },
+        {
+          date: "2024-09-02",
+          name: "Electricity Bill",
+          category: "Utilities",
+          amount: 75,
+          installments: 1,
+        },
+      ],
+      newTransaction: {
+        date: "",
+        name: "",
+        category: "",
+        amount: null,
+        installments: null,
+      },
+    };
+  },
+  methods: {
+    openModal() {
+      this.isModalOpen = true;
+    },
+    closeModal() {
+      this.isModalOpen = false;
+      this.resetForm();
+    },
+    submitTransaction() {
+      // Add new transaction to the list
+      this.transactions.push({ ...this.newTransaction });
+
+      // Close modal and reset form after submission
+      this.closeModal();
+    },
+    resetForm() {
+      this.newTransaction = {
+        date: "",
+        name: "",
+        category: "",
+        amount: null,
+        installments: null,
+      };
+    },
+  },
+};
 </script>
 
 <style lang="scss">
@@ -124,5 +249,72 @@ a {
 .text-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.submit-btn,
+.cancel-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submit-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #dc3545;
+  color: white;
 }
 </style>
